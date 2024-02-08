@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "543293852495",
+    "project_id": "famunity-f604b",
+    "storage_bucket": "famunity-f604b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:543293852495:android:4ca44304e4dff43441d33a",
+        "android_client_info": {
+          "package_name": "com.example.family_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtImFzlivEDG1GNXQ-22mF4tDRnUOGcc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
