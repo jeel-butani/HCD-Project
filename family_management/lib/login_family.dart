@@ -1,5 +1,6 @@
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_member.dart';
+import 'package:family_management/otp.dart';
 import 'package:family_management/signup_family.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,7 +54,7 @@ class _LoginFamilyState extends State<LoginFamily> {
               height: CompnentSize.getHeight(context, 0.025),
             ),
             UiHelper.customButton(() {
-              Get.off(() => LoginMember());
+              Get.off(() => OtpVerify());
             }, "Login", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
