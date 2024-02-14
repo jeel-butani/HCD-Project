@@ -1,8 +1,11 @@
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_family.dart';
+import 'package:family_management/login_member.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'firebase_api/family_api.dart';
 
 class SignupFamily extends StatefulWidget {
   const SignupFamily({super.key});
@@ -13,11 +16,13 @@ class SignupFamily extends StatefulWidget {
 
 class _SignupFamilyState extends State<SignupFamily> {
   late TextEditingController familyNameController;
+  late TextEditingController familyMemberController;
   late TextEditingController phoneController;
   late TextEditingController emailController;
   @override
   void initState() {
     familyNameController = TextEditingController();
+    familyMemberController = TextEditingController();
     phoneController = TextEditingController();
     emailController = TextEditingController();
     // TODO: implement initState
@@ -47,6 +52,11 @@ class _SignupFamilyState extends State<SignupFamily> {
             SizedBox(
               height: CompnentSize.getHeight(context, 0.015),
             ),
+            UiHelper.customTextField(familyMemberController,
+                "how many family member?", Icons.group, context),
+            SizedBox(
+              height: CompnentSize.getHeight(context, 0.025),
+            ),
             UiHelper.customTextField(phoneController,
                 "Main of Family phone number", Icons.phone, context),
             SizedBox(
@@ -57,7 +67,10 @@ class _SignupFamilyState extends State<SignupFamily> {
             SizedBox(
               height: CompnentSize.getHeight(context, 0.025),
             ),
-            UiHelper.customButton(() {}, "Next", context),
+            UiHelper.customButton(() {
+              signUp();
+              
+            }, "Next", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
             ),
@@ -90,5 +103,30 @@ class _SignupFamilyState extends State<SignupFamily> {
         ),
       ),
     );
+  }
+
+  void signUp() async {
+    // print(phoneController.text.trim());
+    if (familyNameController.text.trim() != "" &&
+        familyMemberController.text.trim() != "" &&
+        phoneController.text.trim() != "" &&
+        emailController.text.trim() != "") {
+      var response = await FirebaseCrud.addFamily(
+          name: familyNameController.text.trim(),
+          size: familyMemberController.text.trim(),
+          phoneNum: phoneController.text.trim(),
+          email: emailController.text.trim());
+      if (response.code != 200) {
+        Get.off(() => LoginMember());
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(response.message.toString()),
+              );
+            });
+      }
+    }
   }
 }
