@@ -56,7 +56,7 @@ class MemberCrud {
         emailQuerySnapshot.docs.isNotEmpty;
   }
 
-  static Future<String?> LoginFamily({
+  static Future<String?> LoginMembar({
     required String familyId,
     required String email,
     required String phoneNum,

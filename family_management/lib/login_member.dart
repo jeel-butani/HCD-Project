@@ -1,3 +1,4 @@
+import 'package:family_management/firebase_api/member_api.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/home.dart';
 import 'package:family_management/signup_member.dart';
@@ -18,7 +19,7 @@ class LoginMember extends StatefulWidget {
 class _LoginMemberState extends State<LoginMember> {
   late TextEditingController emailController;
   late TextEditingController phoneController;
-
+  String memberId = "";
   @override
   void initState() {
     emailController = TextEditingController();
@@ -55,7 +56,18 @@ class _LoginMemberState extends State<LoginMember> {
               height: CompnentSize.getHeight(context, 0.025),
             ),
             UiHelper.customButton(() {
-              logIn();
+              if (emailController.text.trim() != "" ||
+                  phoneController.text.trim() != "") {
+                logIn();
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text("Please fill out all fields."),
+                      );
+                    });
+              }
             }, "Login", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
@@ -91,5 +103,23 @@ class _LoginMemberState extends State<LoginMember> {
     );
   }
 
-  void logIn() async {}
+  void logIn() async {
+    memberId = await MemberCrud.LoginMembar(
+      familyId: LoginMember.familyId,
+      email: emailController.text.trim(),
+      phoneNum: phoneController.text.trim(),
+    ).toString();
+
+    if (memberId != "") {
+      Get.off(() => Home(familyId: LoginMember.familyId, memberId: memberId));
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text("There no Family with this information"),
+            );
+          });
+    }
+  }
 }
