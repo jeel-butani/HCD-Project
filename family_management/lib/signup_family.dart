@@ -106,7 +106,6 @@ class _SignupFamilyState extends State<SignupFamily> {
   }
 
   void signUp() async {
-    // print(phoneController.text.trim());
     if (familyNameController.text.trim() != "" &&
         familyMemberController.text.trim() != "" &&
         phoneController.text.trim() != "" &&

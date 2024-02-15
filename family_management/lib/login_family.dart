@@ -21,7 +21,6 @@ class _LoginFamilyState extends State<LoginFamily> {
   void initState() {
     familyIdController = TextEditingController();
     familyPhoneController = TextEditingController();
-    // TODO: implement initState
     super.initState();
   }
 

@@ -14,12 +14,14 @@ class FirebaseCrud {
   }) async {
     Response response = Response();
     DocumentReference documentReferencer = _Collection.doc();
-
+    final now = DateTime.now();
     Map<String, dynamic> data = <String, dynamic>{
       "family_name": name,
       "family_size": size,
       "head_num": phoneNum,
-      "head_email": email
+      "head_email": email,
+      "createAt": now,
+      "status": true,
     };
 
     var result = await documentReferencer.set(data).whenComplete(() {
