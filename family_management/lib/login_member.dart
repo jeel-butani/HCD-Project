@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginMember extends StatefulWidget {
-  const LoginMember({super.key});
+  static String id ="";
+  LoginMember(String? iD,{super.key}){
+    id = iD!;
+  }
 
   @override
   State<LoginMember> createState() => _LoginMemberState();
@@ -15,6 +18,7 @@ class LoginMember extends StatefulWidget {
 class _LoginMemberState extends State<LoginMember> {
   late TextEditingController emailController;
   late TextEditingController phoneController;
+  
   @override
   void initState() {
     emailController = TextEditingController();
@@ -69,7 +73,7 @@ class _LoginMemberState extends State<LoginMember> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.off(() => SignupMember());
+                    Get.off(() => SignupMember(iD:LoginMember.id));
                   },
                   child: Text(
                     "Sign up",

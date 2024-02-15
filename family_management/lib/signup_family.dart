@@ -1,6 +1,7 @@
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_family.dart';
 import 'package:family_management/login_member.dart';
+import 'package:family_management/signup_member.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,8 +69,8 @@ class _SignupFamilyState extends State<SignupFamily> {
               height: CompnentSize.getHeight(context, 0.025),
             ),
             UiHelper.customButton(() {
-              signUp();
-              
+              // signUp();
+              Get.off(() => SignupMember(iD: "xEx6uuZK2CaInJXqf5QP"));
             }, "Next", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
@@ -110,22 +111,42 @@ class _SignupFamilyState extends State<SignupFamily> {
         familyMemberController.text.trim() != "" &&
         phoneController.text.trim() != "" &&
         emailController.text.trim() != "") {
-      var response = await FirebaseCrud.addFamily(
-          name: familyNameController.text.trim(),
-          size: familyMemberController.text.trim(),
+      if (await FamilyCrud.checkFamily(
           phoneNum: phoneController.text.trim(),
-          email: emailController.text.trim());
-      if (response.code != 200) {
-        Get.off(() => LoginMember());
-      } else {
+          email: emailController.text.trim())) {
         showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                content: Text(response.message.toString()),
+                content: Text("Head of the family already exists."),
               );
             });
+      } else {
+        var response = await FamilyCrud.addFamily(
+            name: familyNameController.text.trim(),
+            size: familyMemberController.text.trim(),
+            phoneNum: phoneController.text.trim(),
+            email: emailController.text.trim());
+        if (response.code != 200) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text(response.message.toString()),
+                );
+              });
+        } else {
+          Get.off(() => SignupMember(iD: response.id.toString()));
+        }
       }
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text("Please Fill all field"),
+            );
+          });
     }
   }
 }

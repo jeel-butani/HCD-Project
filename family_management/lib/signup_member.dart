@@ -1,3 +1,4 @@
+import 'package:family_management/firebase_api/member_api.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_member.dart';
 import 'package:family_management/ui_helper.dart';
@@ -5,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SignupMember extends StatefulWidget {
-  const SignupMember({super.key});
+  static String id = "";
+  SignupMember({super.key, required String iD}) {
+    id = iD!;
+  }
 
   @override
   State<SignupMember> createState() => _SignupMemberState();
@@ -15,6 +19,7 @@ class _SignupMemberState extends State<SignupMember> {
   late TextEditingController nameController;
   late TextEditingController phoneController;
   late TextEditingController emailController;
+  
   @override
   void initState() {
     nameController = TextEditingController();
@@ -26,6 +31,7 @@ class _SignupMemberState extends State<SignupMember> {
 
   @override
   Widget build(BuildContext context) {
+    bool valuefirst = false;  
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CompnentSize.background,
@@ -44,6 +50,7 @@ class _SignupMemberState extends State<SignupMember> {
           children: [
             UiHelper.customTextField(
                 nameController, "Enter name", Icons.person, context),
+            
             SizedBox(
               height: CompnentSize.getHeight(context, 0.015),
             ),
@@ -57,7 +64,9 @@ class _SignupMemberState extends State<SignupMember> {
             SizedBox(
               height: CompnentSize.getHeight(context, 0.025),
             ),
-            UiHelper.customButton(() {}, "Next", context),
+            UiHelper.customButton(() {
+              signUp();
+            }, "Next", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
             ),
@@ -74,7 +83,7 @@ class _SignupMemberState extends State<SignupMember> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.off(() => LoginMember());
+                    Get.off(() => LoginMember(SignupMember.id));
                   },
                   child: Text(
                     "Login",
@@ -90,5 +99,35 @@ class _SignupMemberState extends State<SignupMember> {
         ),
       ),
     );
+  }
+
+  void signUp() async{
+    if (nameController.text.trim() != "" &&
+        emailController.text.trim() != "" &&
+        phoneController.text.trim() != "") {
+      var response = await MemberCrud.addMember(
+          familyId: SignupMember.id,
+          name: nameController.text.trim(),
+          phoneNum: phoneController.text.trim(),
+          email: emailController.text.trim(),
+          isHead: false);
+      if (response.code != 200) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(response.message.toString()),
+              );
+            });
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(response.message.toString()),
+              );
+            });
+      }
+    }
   }
 }

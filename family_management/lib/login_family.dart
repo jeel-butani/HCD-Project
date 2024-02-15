@@ -53,7 +53,7 @@ class _LoginFamilyState extends State<LoginFamily> {
               height: CompnentSize.getHeight(context, 0.025),
             ),
             UiHelper.customButton(() {
-              Get.off(() => OtpVerify());
+              // Get.off(() => OtpVerify());
             }, "Login", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
