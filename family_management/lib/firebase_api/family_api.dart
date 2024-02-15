@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:family_management/login_family.dart';
 import '../model/response.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -32,24 +33,44 @@ class FamilyCrud {
       response.message = e;
     });
     if (response.code == 200) {
-       response.id= documentReferencer.id;
+      response.id = documentReferencer.id;
     }
     return response;
   }
 
   static Future<bool> checkFamily({
-
     required String phoneNum,
     required String email,
   }) async {
     Response response = Response();
-     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('families')
-      .where('head_num', isEqualTo: phoneNum)
-      .where('head_email', isEqualTo: email)
-      .get();
+    QuerySnapshot phoneSnapshot = await FirebaseFirestore.instance
+        .collection('families')
+        .where('head_num', isEqualTo: phoneNum)
+        .get();
+    QuerySnapshot emailSnapshot = await FirebaseFirestore.instance
+        .collection('families')
+        .where('head_num', isEqualTo: phoneNum)
+        .get();
 
-    
-    return querySnapshot.docs.isNotEmpty;
+    return phoneSnapshot.docs.isNotEmpty || emailSnapshot.docs.isNotEmpty;
+  }
+
+  static Future<String?> LoginFamily({
+    required String email,
+    required String phoneNum,
+  }) async {
+    Response response = Response();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Family')
+        .where('head_num', isEqualTo: phoneNum)
+        .where('head_email', isEqualTo: email)
+        .get();
+    // print(querySnapshot.docs);
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
+    } else {
+      // No document found matching the provided criteria
+      return null;
+    }
   }
 }

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginMember extends StatefulWidget {
-  static String id ="";
-  LoginMember(String? iD,{super.key}){
-    id = iD!;
+  static String familyId = "";
+  LoginMember(String? iD, {super.key}) {
+    familyId = iD!;
   }
 
   @override
@@ -18,7 +18,7 @@ class LoginMember extends StatefulWidget {
 class _LoginMemberState extends State<LoginMember> {
   late TextEditingController emailController;
   late TextEditingController phoneController;
-  
+
   @override
   void initState() {
     emailController = TextEditingController();
@@ -55,7 +55,7 @@ class _LoginMemberState extends State<LoginMember> {
               height: CompnentSize.getHeight(context, 0.025),
             ),
             UiHelper.customButton(() {
-              Get.off(() => Home());
+              logIn();
             }, "Login", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
@@ -73,7 +73,7 @@ class _LoginMemberState extends State<LoginMember> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.off(() => SignupMember(iD:LoginMember.id));
+                    Get.off(() => SignupMember(iD: LoginMember.familyId));
                   },
                   child: Text(
                     "Sign up",
@@ -90,4 +90,6 @@ class _LoginMemberState extends State<LoginMember> {
       ),
     );
   }
+
+  void logIn() async {}
 }

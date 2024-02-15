@@ -1,14 +1,15 @@
 import 'package:family_management/firebase_api/member_api.dart';
 import 'package:family_management/get_size.dart';
+import 'package:family_management/home.dart';
 import 'package:family_management/login_member.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SignupMember extends StatefulWidget {
-  static String id = "";
+  static String familyId = "";
   SignupMember({super.key, required String iD}) {
-    id = iD!;
+    familyId = iD!;
   }
 
   @override
@@ -19,7 +20,7 @@ class _SignupMemberState extends State<SignupMember> {
   late TextEditingController nameController;
   late TextEditingController phoneController;
   late TextEditingController emailController;
-  
+  String memberId = "";
   @override
   void initState() {
     nameController = TextEditingController();
@@ -31,7 +32,7 @@ class _SignupMemberState extends State<SignupMember> {
 
   @override
   Widget build(BuildContext context) {
-    bool valuefirst = false;  
+    bool valuefirst = false;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CompnentSize.background,
@@ -50,7 +51,6 @@ class _SignupMemberState extends State<SignupMember> {
           children: [
             UiHelper.customTextField(
                 nameController, "Enter name", Icons.person, context),
-            
             SizedBox(
               height: CompnentSize.getHeight(context, 0.015),
             ),
@@ -64,8 +64,18 @@ class _SignupMemberState extends State<SignupMember> {
             SizedBox(
               height: CompnentSize.getHeight(context, 0.025),
             ),
-            UiHelper.customButton(() {
-              signUp();
+            UiHelper.customButton(() async {
+              if (await checkUser()) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text("This user already exists!"),
+                      );
+                    });
+              } else {
+                signUp();
+              }
             }, "Next", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
@@ -83,7 +93,7 @@ class _SignupMemberState extends State<SignupMember> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Get.off(() => LoginMember(SignupMember.id));
+                    Get.off(() => LoginMember(SignupMember.familyId));
                   },
                   child: Text(
                     "Login",
@@ -101,12 +111,12 @@ class _SignupMemberState extends State<SignupMember> {
     );
   }
 
-  void signUp() async{
+  void signUp() async {
     if (nameController.text.trim() != "" &&
         emailController.text.trim() != "" &&
         phoneController.text.trim() != "") {
       var response = await MemberCrud.addMember(
-          familyId: SignupMember.id,
+          familyId: SignupMember.familyId,
           name: nameController.text.trim(),
           phoneNum: phoneController.text.trim(),
           email: emailController.text.trim(),
@@ -120,14 +130,17 @@ class _SignupMemberState extends State<SignupMember> {
               );
             });
       } else {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                content: Text(response.message.toString()),
-              );
-            });
+        memberId = response.id.toString();
+        Get.off(
+            () => Home(familyId: SignupMember.familyId, memberId: memberId));
       }
     }
+  }
+
+  Future<bool> checkUser() async {
+    return await MemberCrud.checkMember(
+        familyId: SignupMember.familyId,
+        phoneNum: phoneController.text.trim(),
+        email: emailController.text.trim());
   }
 }

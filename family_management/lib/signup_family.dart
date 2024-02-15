@@ -68,9 +68,19 @@ class _SignupFamilyState extends State<SignupFamily> {
             SizedBox(
               height: CompnentSize.getHeight(context, 0.025),
             ),
-            UiHelper.customButton(() {
-              // signUp();
-              Get.off(() => SignupMember(iD: "xEx6uuZK2CaInJXqf5QP"));
+            UiHelper.customButton(() async {
+              if (await chechFamily()) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text("Family head already have account"),
+                      );
+                    });
+              } else {
+                signUp();
+              }
+              //Get.off(() => SignupMember(iD: "xEx6uuZK2CaInJXqf5QP"));
             }, "Next", context),
             SizedBox(
               height: CompnentSize.getHeight(context, 0.01),
@@ -111,33 +121,21 @@ class _SignupFamilyState extends State<SignupFamily> {
         familyMemberController.text.trim() != "" &&
         phoneController.text.trim() != "" &&
         emailController.text.trim() != "") {
-      if (await FamilyCrud.checkFamily(
+      var response = await FamilyCrud.addFamily(
+          name: familyNameController.text.trim(),
+          size: familyMemberController.text.trim(),
           phoneNum: phoneController.text.trim(),
-          email: emailController.text.trim())) {
+          email: emailController.text.trim());
+      if (response.code != 200) {
         showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
-                content: Text("Head of the family already exists."),
+                content: Text(response.message.toString()),
               );
             });
       } else {
-        var response = await FamilyCrud.addFamily(
-            name: familyNameController.text.trim(),
-            size: familyMemberController.text.trim(),
-            phoneNum: phoneController.text.trim(),
-            email: emailController.text.trim());
-        if (response.code != 200) {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Text(response.message.toString()),
-                );
-              });
-        } else {
-          Get.off(() => SignupMember(iD: response.id.toString()));
-        }
+        Get.off(() => SignupMember(iD: response.id.toString()));
       }
     } else {
       showDialog(
@@ -148,5 +146,11 @@ class _SignupFamilyState extends State<SignupFamily> {
             );
           });
     }
+  }
+
+  Future<bool> chechFamily() async {
+    return FamilyCrud.checkFamily(
+        phoneNum: phoneController.text.trim(),
+        email: emailController.text.trim());
   }
 }

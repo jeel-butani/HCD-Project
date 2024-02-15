@@ -38,4 +38,40 @@ class MemberCrud {
     }
     return response;
   }
+
+  static Future<bool> checkMember(
+      {required String familyId,
+      required String phoneNum,
+      required String email}) async {
+    QuerySnapshot phoneQuerySnapshot = await FirebaseFirestore.instance
+        .collection('Family/$familyId/members')
+        .where('member_phone', isEqualTo: phoneNum)
+        .get();
+
+    QuerySnapshot emailQuerySnapshot = await FirebaseFirestore.instance
+        .collection('Family/$familyId/members')
+        .where('member_email', isEqualTo: email)
+        .get();
+    return phoneQuerySnapshot.docs.isNotEmpty ||
+        emailQuerySnapshot.docs.isNotEmpty;
+  }
+
+  static Future<String?> LoginFamily({
+    required String familyId,
+    required String email,
+    required String phoneNum,
+  }) async {
+    Response response = Response();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Family/$familyId/members')
+        .where('member_phone', isEqualTo: phoneNum)
+        .where('member_email', isEqualTo: email)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
+    } else {
+      return null;
+    }
+  }
 }

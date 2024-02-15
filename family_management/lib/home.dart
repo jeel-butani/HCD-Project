@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  static String familyId = "";
+  static String memberId = "";
+  const Home({super.key, required String familyId, required String memberId});
 
   @override
   Widget build(BuildContext context) {
