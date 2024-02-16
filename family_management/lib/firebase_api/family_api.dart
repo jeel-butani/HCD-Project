@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:family_management/login_family.dart';
 import '../model/response.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -25,6 +24,7 @@ class FamilyCrud {
       "status": true,
     };
 
+    // ignore: unused_local_variable
     var result = await documentReferencer.set(data).whenComplete(() {
       response.code = 200;
       response.message = "Sucessfully added to the database";
@@ -42,7 +42,7 @@ class FamilyCrud {
     required String phoneNum,
     required String email,
   }) async {
-    Response response = Response();
+
     QuerySnapshot phoneSnapshot = await FirebaseFirestore.instance
         .collection('families')
         .where('head_num', isEqualTo: phoneNum)
@@ -59,7 +59,6 @@ class FamilyCrud {
     required String email,
     required String phoneNum,
   }) async {
-    Response response = Response();
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Family')
         .where('head_num', isEqualTo: phoneNum)

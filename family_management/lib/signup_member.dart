@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 class SignupMember extends StatefulWidget {
   static String familyId = "";
   SignupMember({super.key, required String iD}) {
-    familyId = iD!;
+    familyId = iD;
   }
 
   @override
@@ -32,7 +32,6 @@ class _SignupMemberState extends State<SignupMember> {
 
   @override
   Widget build(BuildContext context) {
-    bool valuefirst = false;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CompnentSize.background,

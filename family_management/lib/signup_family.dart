@@ -1,6 +1,5 @@
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_family.dart';
-import 'package:family_management/login_member.dart';
 import 'package:family_management/signup_member.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';

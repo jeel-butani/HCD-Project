@@ -26,6 +26,7 @@ class MemberCrud {
       "status": true,
     };
 
+    // ignore: unused_local_variable
     var result = await documentReferencer.set(data).whenComplete(() {
       response.code = 200;
       response.message = "Sucessfully added to the database";
@@ -61,7 +62,6 @@ class MemberCrud {
     required String email,
     required String phoneNum,
   }) async {
-    Response response = Response();
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Family/$familyId/members')
         .where('member_phone', isEqualTo: phoneNum)
