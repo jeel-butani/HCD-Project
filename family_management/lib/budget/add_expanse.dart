@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:family_management/budget/home_budget.dart';
 import 'package:family_management/get_size.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../firebase_api/add_transaction_api.dart';
 
 class AddExpanse extends StatefulWidget {
-  static String familyId = "";
-  static String memberId = "";
+  static String familyId = "TBmPjzN6DepMg6PJmnAT";
+  static String memberId = "vh7NdX3kI3jFG8rwl8fC";
   const AddExpanse(
-      {Key? key, required String familyId, required String memberId})
-      : super(key: key);
+      {super.key, required String familyId, required String memberId});
 
   @override
   State<AddExpanse> createState() => _AddExpanseState();
@@ -145,9 +149,12 @@ class _AddExpanseState extends State<AddExpanse> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     // Perform submission logic here
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Expense submitted successfully')),
-                    );
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   SnackBar(content: Text('Expense submitted successfully')),
+                    // );
+                    // print("FAMILY:" + AddExpanse.familyId);
+                    // print("Member:" + AddExpanse.memberId);
+                    addTarans();
                   }
                 },
                 child: Text('Submit'),
@@ -157,5 +164,33 @@ class _AddExpanseState extends State<AddExpanse> {
         ),
       ),
     );
+  }
+
+  void addTarans() async {
+    var response = await Transactions.addTransaction(
+      familyId: AddExpanse.familyId,
+      memberId: AddExpanse.memberId,
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      amount: double.parse(_amountController.text.trim()),
+      date: _dateController.text.trim(),
+      time: _timeController.text.trim(),
+    );
+    if (response.code != 200) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text(response.message.toString()),
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Expense submitted successfully')),
+      );
+      Get.off(() => HomeBudget(
+          familyId: AddExpanse.familyId, memberId: AddExpanse.memberId));
+    }
   }
 }

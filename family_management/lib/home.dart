@@ -6,7 +6,10 @@ import 'package:get/get.dart';
 class Home extends StatelessWidget {
   static String familyId = "";
   static String memberId = "";
-  const Home({super.key, required String familyId, required String memberId});
+  Home({super.key, required String familyId, required String memberId})  {
+    Home.familyId = familyId;
+    Home.memberId = memberId;
+  }
 
   @override
   Widget build(BuildContext context) {

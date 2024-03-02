@@ -6,8 +6,11 @@ import 'package:get/get.dart';
 class HomeBudget extends StatefulWidget {
   static String familyId = "";
   static String memberId = "";
-  const HomeBudget(
-      {super.key, required String familyId, required String memberId});
+  HomeBudget(
+      {super.key, required String familyId, required String memberId}){
+        HomeBudget.memberId = memberId;
+        HomeBudget.familyId = familyId;
+      }
 
   @override
   State<HomeBudget> createState() => _HomeBudgetState();
