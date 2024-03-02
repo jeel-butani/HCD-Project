@@ -1,22 +1,39 @@
 import 'package:family_management/budget/add_expanse.dart';
+import 'package:family_management/firebase_api/fetch_transaction_api.dart';
 import 'package:family_management/get_size.dart';
+import 'package:family_management/model/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeBudget extends StatefulWidget {
   static String familyId = "";
   static String memberId = "";
-  HomeBudget(
-      {super.key, required String familyId, required String memberId}){
-        HomeBudget.memberId = memberId;
-        HomeBudget.familyId = familyId;
-      }
+
+  HomeBudget({
+    Key? key,
+    required String familyId,
+    required String memberId,
+  }) : super(key: key) {
+    HomeBudget.memberId = memberId;
+    HomeBudget.familyId = familyId;
+  }
 
   @override
   State<HomeBudget> createState() => _HomeBudgetState();
 }
 
 class _HomeBudgetState extends State<HomeBudget> {
+  late Future<List<TransactionData>> _transactionDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _transactionDataFuture = FetchTransaction.fetchTransactions(
+      familyId: HomeBudget.familyId,
+      memberId: HomeBudget.memberId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,9 +42,10 @@ class _HomeBudgetState extends State<HomeBudget> {
         title: Text(
           'Budget',
           style: TextStyle(
-              fontFamily: 'MooliBold',
-              color: CompnentSize.boldTextColor,
-              fontWeight: FontWeight.w900),
+            fontFamily: 'MooliBold',
+            color: CompnentSize.boldTextColor,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         centerTitle: true,
       ),
@@ -96,48 +114,42 @@ class _HomeBudgetState extends State<HomeBudget> {
             ),
           ),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-              child: ListView(
-                children: <Widget>[
-                  BudgetItemCard(
-                    label: 'Food',
-                    companyName: 'ABC Company',
-                    date: '31-12',
-                    time: '10:00 AM',
-                    amount: '\$1,000',
-                    icon: Icons.fastfood,
-                    isIncome: true,
-                  ),
-                  BudgetItemCard(
-                    label: 'Entertentment',
-                    companyName: 'XYZ Company',
-                    date: '16-02',
-                    time: '2:00 PM',
-                    amount: '\$2,000',
-                    icon: Icons.home,
-                    isIncome: false,
-                  ),
-                  BudgetItemCard(
-                    label: 'Shopping',
-                    companyName: 'PQR Company',
-                    date: '12-12',
-                    time: '4:00 PM',
-                    amount: '\$500',
-                    icon: Icons.directions_car,
-                    isIncome: true,
-                  ),
-                  BudgetItemCard(
-                    label: 'salary',
-                    companyName: 'MNO Company',
-                    date: '28-02',
-                    time: '8:00 PM',
-                    amount: '\$300',
-                    icon: Icons.music_note,
-                    isIncome: true,
-                  ),
-                ],
-              ),
+            child: FutureBuilder<List<TransactionData>>(
+              future: _transactionDataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else if (snapshot.hasData) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        TransactionData transaction = snapshot.data![index];
+                        return BudgetItemCard(
+                          label: transaction.name,
+                          companyName: transaction.type,
+                          date: transaction.date,
+                          time: transaction.time,
+                          amount: '\$${transaction.amount}',
+                          // Use appropriate icon based on type
+                          isIncome: !transaction.isExpense,
+                        );
+                      },
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: Text('No transactions available'),
+                  );
+                }
+              },
             ),
           ),
         ],
@@ -162,7 +174,6 @@ class BudgetItemCard extends StatelessWidget {
   final String date;
   final String time;
   final String amount;
-  final IconData icon;
   final bool isIncome;
 
   BudgetItemCard({
@@ -171,7 +182,6 @@ class BudgetItemCard extends StatelessWidget {
     required this.date,
     required this.time,
     required this.amount,
-    required this.icon,
     required this.isIncome,
   });
 
@@ -179,7 +189,6 @@ class BudgetItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(icon),
         title: Text(
           label,
           style: TextStyle(
