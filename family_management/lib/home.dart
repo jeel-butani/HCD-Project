@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 class Home extends StatelessWidget {
   static String familyId = "";
   static String memberId = "";
-  Home({super.key, required String familyId, required String memberId})  {
+  Home({super.key, required String familyId, required String memberId}) {
     Home.familyId = familyId;
     Home.memberId = memberId;
   }
@@ -35,6 +35,8 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: GestureDetector(
                       onTap: () {
+                        // print('FamilyId: ' + Home.familyId);
+                        // print('memberId: ' + Home.memberId);
                         Get.off(() => HomeBudget(
                               familyId: Home.familyId,
                               memberId: Home.memberId,

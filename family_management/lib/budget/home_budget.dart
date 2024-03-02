@@ -9,13 +9,9 @@ class HomeBudget extends StatefulWidget {
   static String familyId = "";
   static String memberId = "";
 
-  HomeBudget({
-    Key? key,
-    required String familyId,
-    required String memberId,
-  }) : super(key: key) {
-    HomeBudget.memberId = memberId;
+  HomeBudget({super.key, required String familyId, required String memberId}) {
     HomeBudget.familyId = familyId;
+    HomeBudget.memberId = memberId;
   }
 
   @override
@@ -49,117 +45,149 @@ class _HomeBudgetState extends State<HomeBudget> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 2.0,
-              color: Colors.blue.shade100,
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      'Total balance',
-                      style: TextStyle(
-                        fontFamily: 'MooliBold',
-                        fontSize: CompnentSize.getFontSize(context, 0.03),
-                        color: CompnentSize.textColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '\$10,000',
-                      style: TextStyle(
-                        fontFamily: 'MooliBold',
-                        fontSize: CompnentSize.getFontSize(context, 0.042),
-                        color: CompnentSize.textColor,
-                        fontWeight: FontWeight.w800,
-                      ),
+      body: FutureBuilder<List<TransactionData>>(
+        future: _transactionDataFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            double totalIncome = 0;
+            double totalExpense = 0;
+
+            snapshot.data!.forEach((transaction) {
+              if (transaction.isExpense) {
+                totalExpense += transaction.amount;
+              } else {
+                totalIncome += transaction.amount;
+              }
+            });
+
+            double totalBalance = totalIncome - totalExpense;
+
+            return Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(16.0),
+                  child: Card(
+                    elevation: 2.0,
+                    color: Colors.blue.shade100,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Total balance',
+                            style: TextStyle(
+                              fontFamily: 'MooliBold',
+                              fontSize: CompnentSize.getFontSize(context, 0.03),
+                              color: CompnentSize.textColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            '\$$totalBalance',
+                            style: TextStyle(
+                              fontFamily: 'MooliBold',
+                              fontSize:
+                                  CompnentSize.getFontSize(context, 0.042),
+                              color:
+                                  totalBalance >= 0 ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                                width: CompnentSize.getWidth(context, 0.05)),
+                            IncomeExpenseIndicator(
+                              label: 'Income',
+                              amount: '\$$totalIncome',
+                              icon: Icons.arrow_drop_down,
+                              color: Colors.green,
+                            ),
+                            SizedBox(
+                                width: CompnentSize.getWidth(context, 0.3)),
+                            IncomeExpenseIndicator(
+                              label: 'Expense',
+                              amount: '\$$totalExpense',
+                              icon: Icons.arrow_drop_up,
+                              color: Colors.red,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: CompnentSize.getHeight(context, 0.01),
+                        )
+                      ],
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(width: CompnentSize.getWidth(context, 0.05)),
-                      IncomeExpenseIndicator(
-                        label: 'Income',
-                        amount: '+\$5,000',
-                        icon: Icons.arrow_drop_down,
-                        color: Colors.green,
-                      ),
-                      SizedBox(width: CompnentSize.getWidth(context, 0.3)),
-                      IncomeExpenseIndicator(
-                        label: 'Expense',
-                        amount: '-\$3,000',
-                        icon: Icons.arrow_drop_up,
-                        color: Colors.red,
-                      ),
-                    ],
+                ),
+                Text(
+                  "Transactions",
+                  style: TextStyle(
+                    fontFamily: 'MooliBold',
+                    color: CompnentSize.textColor,
+                    fontSize: CompnentSize.getFontSize(context, 0.035),
+                    fontWeight: FontWeight.w900,
                   ),
-                  SizedBox(
-                    height: CompnentSize.getHeight(context, 0.01),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Text(
-            "Transactions",
-            style: TextStyle(
-              fontFamily: 'MooliBold',
-              color: CompnentSize.textColor,
-              fontSize: CompnentSize.getFontSize(context, 0.035),
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<TransactionData>>(
-              future: _transactionDataFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else if (snapshot.hasData) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        TransactionData transaction = snapshot.data![index];
-                        return BudgetItemCard(
-                          label: transaction.name,
-                          companyName: transaction.type,
-                          date: transaction.date,
-                          time: transaction.time,
-                          amount: '\$${transaction.amount}',
-                          // Use appropriate icon based on type
-                          isIncome: !transaction.isExpense,
+                ),
+                Expanded(
+                  child: FutureBuilder<List<TransactionData>>(
+                    future: _transactionDataFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
                         );
-                      },
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: Text('No transactions available'),
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else if (snapshot.hasData) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              TransactionData transaction =
+                                  snapshot.data![index];
+                              return BudgetItemCard(
+                                label: transaction.name,
+                                companyName: transaction.type,
+                                date: transaction.date,
+                                time: transaction.time,
+                                amount: '\$${transaction.amount}',
+                                isIncome: !transaction.isExpense,
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        return Center(
+                          child: Text('No transactions available'),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return Center(
+              child: Text('No data available'),
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade300,
         onPressed: () {
           Get.put(() => AddExpanse(
-                familyId: 'TBmPjzN6DepMg6PJmnAT',
-                memberId: 'vh7NdX3kI3jFG8rwl8fC',
+                familyId: HomeBudget.familyId,
+                memberId: HomeBudget.memberId,
               ));
         },
         child: Icon(Icons.add),

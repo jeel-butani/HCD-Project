@@ -19,7 +19,6 @@ class LoginMember extends StatefulWidget {
 class _LoginMemberState extends State<LoginMember> {
   late TextEditingController emailController;
   late TextEditingController phoneController;
-  String memberId = "";
   @override
   void initState() {
     emailController = TextEditingController();
@@ -104,14 +103,14 @@ class _LoginMemberState extends State<LoginMember> {
   }
 
   void logIn() async {
-    memberId = await MemberCrud.LoginMembar(
+    String? memberId = (await MemberCrud.LoginMembar(
       familyId: LoginMember.familyId,
       email: emailController.text.trim(),
       phoneNum: phoneController.text.trim(),
-    ).toString();
-
+    ));
+    String familyIdString = memberId?.toString() ?? '';
     if (memberId != "") {
-      Get.off(() => Home(familyId: LoginMember.familyId, memberId: memberId));
+      Get.off(() => Home(familyId: LoginMember.familyId, memberId: familyIdString));
     } else {
       showDialog(
           context: context,

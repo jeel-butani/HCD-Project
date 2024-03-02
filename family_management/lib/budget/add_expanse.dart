@@ -8,10 +8,12 @@ import 'package:get/get.dart';
 import '../firebase_api/add_transaction_api.dart';
 
 class AddExpanse extends StatefulWidget {
-  static String familyId = "TBmPjzN6DepMg6PJmnAT";
-  static String memberId = "vh7NdX3kI3jFG8rwl8fC";
-  const AddExpanse(
-      {super.key, required String familyId, required String memberId});
+  static String familyId = "";
+  static String memberId = "";
+  AddExpanse({super.key, required String familyId, required String memberId}) {
+    AddExpanse.familyId = familyId;
+    AddExpanse.memberId = memberId;
+  }
 
   @override
   State<AddExpanse> createState() => _AddExpanseState();
@@ -34,9 +36,10 @@ class _AddExpanseState extends State<AddExpanse> {
         title: Text(
           'Add Transaction',
           style: TextStyle(
-              fontFamily: 'MooliBold',
-              color: CompnentSize.boldTextColor,
-              fontWeight: FontWeight.w900),
+            fontFamily: 'Mooli',
+            color: CompnentSize.boldTextColor,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         centerTitle: true,
       ),
@@ -52,6 +55,8 @@ class _AddExpanseState extends State<AddExpanse> {
                 decoration: InputDecoration(
                   labelText: 'Expense Name',
                   hintText: 'Food/ Shopping',
+                  labelStyle: TextStyle(fontFamily: 'Mooli'),
+                  hintStyle: TextStyle(fontFamily: 'Mooli'),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -65,6 +70,8 @@ class _AddExpanseState extends State<AddExpanse> {
                 decoration: InputDecoration(
                   labelText: 'Type',
                   hintText: 'Cash/ Kotak/ HDFC/ GPay',
+                  labelStyle: TextStyle(fontFamily: 'Mooli'),
+                  hintStyle: TextStyle(fontFamily: 'Mooli'),
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -75,8 +82,12 @@ class _AddExpanseState extends State<AddExpanse> {
               ),
               TextFormField(
                 controller: _amountController,
-                decoration:
-                    InputDecoration(labelText: 'Amount', hintText: '10.0'),
+                decoration: InputDecoration(
+                  labelText: 'Amount',
+                  hintText: '10.0',
+                  labelStyle: TextStyle(fontFamily: 'Mooli'),
+                  hintStyle: TextStyle(fontFamily: 'Mooli'),
+                ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -100,8 +111,7 @@ class _AddExpanseState extends State<AddExpanse> {
                               context: context,
                               initialDate: DateTime.now(),
                               firstDate: DateTime(2000),
-                              lastDate: DateTime
-                                  .now(), // Only allow past and present dates
+                              lastDate: DateTime.now(),
                             );
                             if (pickedDate != null) {
                               setState(() {
@@ -155,7 +165,10 @@ class _AddExpanseState extends State<AddExpanse> {
               ),
               Row(
                 children: [
-                  Text('Transaction Type:'),
+                  Text(
+                    'Transaction Type:',
+                    style: TextStyle(fontFamily: 'Mooli'),
+                  ),
                   SizedBox(width: 10),
                   DropdownButton<bool>(
                     value: _isExpense,
@@ -167,22 +180,28 @@ class _AddExpanseState extends State<AddExpanse> {
                     items: [
                       DropdownMenuItem(
                         value: true,
-                        child: Text('Expense'),
+                        child: Text('Expense',
+                            style: TextStyle(fontFamily: 'Mooli')),
                       ),
                       DropdownMenuItem(
                         value: false,
-                        child: Text('Income'),
+                        child: Text('Income',
+                            style: TextStyle(fontFamily: 'Mooli')),
                       ),
                     ],
                   ),
                 ],
               ),
               SizedBox(height: 16.0),
-              UiHelper.customButton(() {
-                if (_formKey.currentState!.validate()) {
-                  addTarans();
-                }
-              }, 'submit', context),
+              UiHelper.customButton(
+                () {
+                  if (_formKey.currentState!.validate()) {
+                    addTarans();
+                  }
+                },
+                'submit',
+                context,
+              ),
             ],
           ),
         ),
