@@ -8,10 +8,11 @@ class Transactions {
     required String familyId,
     required String memberId,
     required String name,
-    required String description,
+    required String type,
     required double amount,
     required String date,
     required String time,
+    required bool isExpense, // New parameter
   }) async {
     final CollectionReference _collection = _firestore.collection(
         'Family/' + familyId + "/members/" + memberId + "/transactions");
@@ -20,10 +21,11 @@ class Transactions {
     final now = DateTime.now();
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
-      "description": description,
+      "type": type,
       "amount": amount,
       "date": date,
       "time": time,
+      "isExpense": isExpense,
       "createdAt": now,
     };
 

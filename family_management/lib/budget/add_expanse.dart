@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:family_management/budget/home_budget.dart';
 import 'package:family_management/get_size.dart';
+import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +24,7 @@ class _AddExpanseState extends State<AddExpanse> {
   TextEditingController _amountController = TextEditingController();
   TextEditingController _dateController = TextEditingController();
   TextEditingController _timeController = TextEditingController();
+  bool _isExpense = true; // Initially set as expense
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,10 @@ class _AddExpanseState extends State<AddExpanse> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Expense Name'),
+                decoration: InputDecoration(
+                  labelText: 'Expense Name',
+                  hintText: 'Food/ Shopping',
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please enter the expense name';
@@ -57,17 +62,21 @@ class _AddExpanseState extends State<AddExpanse> {
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Type',
+                  hintText: 'Cash/ Kotak/ HDFC/ GPay',
+                ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the description';
+                    return 'Please enter the Type';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _amountController,
-                decoration: InputDecoration(labelText: 'Amount'),
+                decoration:
+                    InputDecoration(labelText: 'Amount', hintText: '10.0'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -144,21 +153,36 @@ class _AddExpanseState extends State<AddExpanse> {
                   ),
                 ],
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Perform submission logic here
-                    // ScaffoldMessenger.of(context).showSnackBar(
-                    //   SnackBar(content: Text('Expense submitted successfully')),
-                    // );
-                    // print("FAMILY:" + AddExpanse.familyId);
-                    // print("Member:" + AddExpanse.memberId);
-                    addTarans();
-                  }
-                },
-                child: Text('Submit'),
+              Row(
+                children: [
+                  Text('Transaction Type:'),
+                  SizedBox(width: 10),
+                  DropdownButton<bool>(
+                    value: _isExpense,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isExpense = value!;
+                      });
+                    },
+                    items: [
+                      DropdownMenuItem(
+                        value: true,
+                        child: Text('Expense'),
+                      ),
+                      DropdownMenuItem(
+                        value: false,
+                        child: Text('Income'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+              SizedBox(height: 16.0),
+              UiHelper.customButton(() {
+                if (_formKey.currentState!.validate()) {
+                  addTarans();
+                }
+              }, 'submit', context),
             ],
           ),
         ),
@@ -171,10 +195,11 @@ class _AddExpanseState extends State<AddExpanse> {
       familyId: AddExpanse.familyId,
       memberId: AddExpanse.memberId,
       name: _nameController.text.trim(),
-      description: _descriptionController.text.trim(),
+      type: _descriptionController.text.trim(),
       amount: double.parse(_amountController.text.trim()),
       date: _dateController.text.trim(),
       time: _timeController.text.trim(),
+      isExpense: _isExpense,
     );
     if (response.code != 200) {
       showDialog(
@@ -187,7 +212,7 @@ class _AddExpanseState extends State<AddExpanse> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Expense submitted successfully')),
+        SnackBar(content: Text('Transaction submitted successfully')),
       );
       Get.off(() => HomeBudget(
           familyId: AddExpanse.familyId, memberId: AddExpanse.memberId));
