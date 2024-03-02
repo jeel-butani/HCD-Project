@@ -32,7 +32,10 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Get.off(() => HomeBudget());
+                        Get.off(() => HomeBudget(
+                              familyId: Home.familyId,
+                              memberId: Home.memberId,
+                            ));
                       },
                       child: Container(
                         width: CompnentSize.getWidth(context, 0.43),

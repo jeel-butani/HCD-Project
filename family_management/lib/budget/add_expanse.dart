@@ -1,9 +1,12 @@
 import 'package:family_management/get_size.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class AddExpanse extends StatefulWidget {
-  const AddExpanse({super.key});
+  static String familyId = "";
+  static String memberId = "";
+  const AddExpanse(
+      {Key? key, required String familyId, required String memberId})
+      : super(key: key);
 
   @override
   State<AddExpanse> createState() => _AddExpanseState();
@@ -17,28 +20,19 @@ class _AddExpanseState extends State<AddExpanse> {
   TextEditingController _dateController = TextEditingController();
   TextEditingController _timeController = TextEditingController();
 
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _amountController.dispose();
-    _dateController.dispose();
-    _timeController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: CompnentSize.background,
         title: Text(
-          'Add transaction',
+          'Add Transaction',
           style: TextStyle(
               fontFamily: 'MooliBold',
               color: CompnentSize.boldTextColor,
-              fontWeight: FontWeight.w700,
-              fontSize: CompnentSize.getFontSize(context, 0.03)),
+              fontWeight: FontWeight.w900),
         ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -78,36 +72,79 @@ class _AddExpanseState extends State<AddExpanse> {
                   return null;
                 },
               ),
-              SfDateRangePicker(
-                onSelectionChanged: _onSelectionChanged,
-                selectionMode: DateRangePickerSelectionMode.range,
-              ),
-              TextFormField(
-                controller: _timeController,
-                decoration: InputDecoration(labelText: 'Time'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter the time';
-                  }
-                  return null;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'Date',
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.calendar_today),
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime
+                                  .now(), // Only allow past and present dates
+                            );
+                            if (pickedDate != null) {
+                              setState(() {
+                                _dateController.text =
+                                    pickedDate.toString().split(' ')[0];
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please select the date';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _timeController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'Time',
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.access_time),
+                          onPressed: () async {
+                            final TimeOfDay? pickedTime = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            );
+                            if (pickedTime != null) {
+                              setState(() {
+                                _timeController.text =
+                                    pickedTime.format(context);
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please select the time';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    String name = _nameController.text;
-                    String description = _descriptionController.text;
-                    double amount = double.parse(_amountController.text);
-                    String date = _dateController.text;
-                    String time = _timeController.text;
-
-                    // Clear the form fields
-                    _nameController.clear();
-                    _descriptionController.clear();
-                    _amountController.clear();
-                    _dateController.clear();
-                    _timeController.clear();
+                    // Perform submission logic here
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Expense submitted successfully')),
                     );
@@ -120,9 +157,5 @@ class _AddExpanseState extends State<AddExpanse> {
         ),
       ),
     );
-  }
-
-  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    // TODO: implement your code here
   }
 }

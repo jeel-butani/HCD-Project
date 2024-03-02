@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeBudget extends StatefulWidget {
-  const HomeBudget({super.key});
+  static String familyId = "";
+  static String memberId = "";
+  const HomeBudget(
+      {super.key, required String familyId, required String memberId});
 
   @override
   State<HomeBudget> createState() => _HomeBudgetState();
@@ -139,7 +142,10 @@ class _HomeBudgetState extends State<HomeBudget> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade300,
         onPressed: () {
-          Get.put(()=>AddExpanse());
+          Get.put(() => AddExpanse(
+                familyId: 'TBmPjzN6DepMg6PJmnAT',
+                memberId: 'vh7NdX3kI3jFG8rwl8fC',
+              ));
         },
         child: Icon(Icons.add),
       ),

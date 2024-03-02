@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SignupFamily(),
+      home: AddExpanse(
+        familyId: 'TBmPjzN6DepMg6PJmnAT',
+        memberId: 'vh7NdX3kI3jFG8rwl8fC',
+      ),
     );
   }
 }
