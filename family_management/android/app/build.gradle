@@ -70,4 +70,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation("com.google.firebase:firebase-auth")
     implementation 'com.android.support:multidex:1.0.3'
+    implementation "androidx.activity:activity:1.6.0-alpha05"
 }

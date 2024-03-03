@@ -4,7 +4,7 @@ class TransactionData {
   final String name;
   final String time;
   final String type;
-  final bool isExpense; 
+  final bool isExpense;
 
   TransactionData({
     required this.amount,
@@ -12,17 +12,17 @@ class TransactionData {
     required this.name,
     required this.time,
     required this.type,
-    required this.isExpense, 
+    required this.isExpense,
   });
 
   factory TransactionData.fromMap(Map<String, dynamic> map) {
     return TransactionData(
-      amount: map['amount'] ?? 0.0,
+      amount: double.parse(map['amount'] ?? 0.0),
       date: map['date'] ?? '',
       name: map['name'] ?? '',
       time: map['time'] ?? '',
       type: map['type'] ?? '',
-      isExpense: map['isExpense'] ?? true, // Include isExpense in the factory method
+      isExpense: map['isExpense'] ?? true,
     );
   }
 }

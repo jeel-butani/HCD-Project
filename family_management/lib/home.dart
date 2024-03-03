@@ -1,6 +1,7 @@
 import 'package:family_management/budget/home_budget.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_family.dart';
+import 'package:family_management/todo/home_todo.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,7 +40,10 @@ class Home extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: GestureDetector(
                       onTap: () {
-                        Get.off(() => HomeBudget(
+                        // print(Home.familyId);
+                        // print(Home.memberId);
+
+                        Get.to(() => HomeBudget(
                               familyId: Home.familyId,
                               memberId: Home.memberId,
                             ));
@@ -80,12 +84,47 @@ class Home extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      width: CompnentSize.getWidth(context, 0.43),
-                      height: CompnentSize.getHeight(context, 0.25),
-                      decoration: BoxDecoration(
-                        color: CompnentSize.background,
-                        borderRadius: BorderRadius.circular(20.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        // print(Home.familyId);
+                        // print(Home.memberId);
+
+                        Get.to(() => Todo(
+                              familyId: Home.familyId,
+                              memberId: Home.memberId,
+                            ));
+                      },
+                      child: Container(
+                        width: CompnentSize.getWidth(context, 0.43),
+                        height: CompnentSize.getHeight(context, 0.25),
+                        decoration: BoxDecoration(
+                          color: Colors.black12,
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 100, // Set width of the image
+                              height: 100, // Set height of the image
+                              child: Image.asset(
+                                'assets/images/todo.png',
+                                fit: BoxFit
+                                    .contain, // Adjust the fit of the image
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "ToDo",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'MooliBold',
+                                color: CompnentSize.background,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

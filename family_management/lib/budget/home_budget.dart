@@ -54,14 +54,14 @@ class _HomeBudgetState extends State<HomeBudget> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            double totalIncome = 0;
-            double totalExpense = 0;
+            double totalIncome = 0.0;
+            double totalExpense = 0.0;
 
             snapshot.data!.forEach((transaction) {
               if (transaction.isExpense) {
-                totalExpense += transaction.amount;
+                totalExpense += double.parse(transaction.amount.toString());
               } else {
-                totalIncome += transaction.amount;
+                totalIncome += double.parse(transaction.amount.toString());
               }
             });
 
@@ -87,7 +87,7 @@ class _HomeBudgetState extends State<HomeBudget> {
                             ),
                           ),
                           subtitle: Text(
-                            '\$$totalBalance',
+                            '$totalBalance.rs',
                             style: TextStyle(
                               fontFamily: 'MooliBold',
                               fontSize:
@@ -105,7 +105,7 @@ class _HomeBudgetState extends State<HomeBudget> {
                                 width: CompnentSize.getWidth(context, 0.05)),
                             IncomeExpenseIndicator(
                               label: 'Income',
-                              amount: '\$$totalIncome',
+                              amount: '$totalIncome.rs',
                               icon: Icons.arrow_drop_down,
                               color: Colors.green,
                             ),
@@ -113,7 +113,7 @@ class _HomeBudgetState extends State<HomeBudget> {
                                 width: CompnentSize.getWidth(context, 0.3)),
                             IncomeExpenseIndicator(
                               label: 'Expense',
-                              amount: '\$$totalExpense',
+                              amount: '$totalExpense.rs',
                               icon: Icons.arrow_drop_up,
                               color: Colors.red,
                             ),
@@ -160,7 +160,7 @@ class _HomeBudgetState extends State<HomeBudget> {
                                 companyName: transaction.type,
                                 date: transaction.date,
                                 time: transaction.time,
-                                amount: '\$${transaction.amount}',
+                                amount: '${transaction.amount}rs.',
                                 isIncome: !transaction.isExpense,
                               );
                             },
@@ -186,7 +186,7 @@ class _HomeBudgetState extends State<HomeBudget> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade300,
         onPressed: () {
-          Get.put(() => AddExpanse(
+          Get.to(() => AddExpanse(
                 familyId: HomeBudget.familyId,
                 memberId: HomeBudget.memberId,
               ));
