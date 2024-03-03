@@ -18,7 +18,8 @@ class FetchTransaction {
           .collection('transactions')
           .get();
 
-      List<TransactionData> transactions = querySnapshot.docs.map((DocumentSnapshot document) {
+      List<TransactionData> transactions =
+          querySnapshot.docs.map((DocumentSnapshot document) {
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
         return TransactionData(
           amount: data['amount'] ?? 0.0,
@@ -26,7 +27,8 @@ class FetchTransaction {
           name: data['name'] ?? '',
           time: data['time'] ?? '',
           type: data['type'] ?? '',
-          isExpense: data['isExpense'] ?? true, // Include isExpense, default to true if not found
+          isExpense: data['isExpense'] ??
+              true, 
         );
       }).toList();
 
