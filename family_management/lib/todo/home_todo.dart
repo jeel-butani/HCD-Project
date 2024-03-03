@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:family_management/firebase_api/fetch_task_api.dart';
 import 'package:family_management/get_size.dart';
-import 'package:family_management/home.dart';
+import 'package:family_management/model/task.dart';
 import 'package:family_management/todo/add_task.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,67 +19,62 @@ class Todo extends StatefulWidget {
 }
 
 class _TodoState extends State<Todo> {
-  List<Map<String, dynamic>> assignedTasks = [
-    {
-      'task': 'Complete project report',
-      'assignedTo': 'John',
-      'dueDate': '2024-03-10',
-      'dueTime': '08:00',
-      'completed': false,
-      'assignedBy': 'You',
-    },
-    {
-      'task': 'Prepare presentation slides',
-      'assignedTo': 'Alice',
-      'dueDate': '2024-03-08',
-      'dueTime': '10:30',
-      'completed': false,
-      'assignedBy': 'You',
-    },
+  List<TaskData> assignedTasks = [];
+
+  List<TaskData> givenTasks = [
+    TaskData(
+      task: 'Review code changes',
+      assignedTo: 'Bob',
+      dueDate: '2024-03-12',
+      dueTime: '14:00',
+      assignBy: 'Someone Else',
+      createdAt: DateTime.now(),
+      iscompleted: false,
+      taskId: '',
+    ),
+    TaskData(
+      task: 'Arrange team meeting',
+      assignedTo: 'Emily',
+      dueDate: '2024-03-15',
+      dueTime: '09:00',
+      assignBy: 'Someone Else',
+      createdAt: DateTime.now(),
+      iscompleted: false,
+      taskId: '',
+    ),
   ];
 
-  List<Map<String, dynamic>> givenTasks = [
-    {
-      'task': 'Review code changes',
-      'assignedTo': 'Bob',
-      'dueDate': '2024-03-12',
-      'dueTime': '14:00',
-      'completed': true,
-      'assignedBy': 'Someone Else',
-    },
-    {
-      'task': 'Arrange team meeting',
-      'assignedTo': 'Emily',
-      'dueDate': '2024-03-15',
-      'dueTime': '09:00',
-      'completed': false,
-      'assignedBy': 'Someone Else',
-    },
-  ];
-
-  List<Map<String, dynamic>> currentTasks =
-      []; // Will store either assignedTasks or givenTasks based on dropdown selection
-  String dropdownValue = 'Assigned Tasks'; // Default dropdown value
+  List<TaskData> currentTasks = [];
+  String dropdownValue = 'Assigned Tasks';
 
   @override
   void initState() {
     super.initState();
-    currentTasks = assignedTasks; // Default to assigned tasks
+    fetchAssignedTasks();
+  }
+
+  Future<void> fetchAssignedTasks() async {
+    try {
+      List<TaskData> tasks = await FetchTask.fetchTasks(
+        familyId: Todo.familyId,
+        memberId: Todo.memberId,
+      );
+      print('Tasks: ' + tasks.toString());
+      setState(() {
+        assignedTasks = tasks;
+        currentTasks = assignedTasks;
+      });
+    } catch (e) {
+      print('Error fetching assigned tasks: $e');
+      // Handle error accordingly
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: CompnentSize.background,
-        title: Text(
-          'ToDo List',
-          style: TextStyle(
-            fontFamily: 'MooliBold',
-            color: CompnentSize.boldTextColor,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
+        title: Text('ToDo List'),
         centerTitle: true,
       ),
       body: ListView.builder(
@@ -85,55 +82,56 @@ class _TodoState extends State<Todo> {
         itemBuilder: (context, index) {
           return Card(
             child: ListTile(
-              title: Text(
-                currentTasks[index]['task'],
-                style: TextStyle(
-                  fontFamily: 'MooliBold',
-                  fontSize: CompnentSize.getFontSize(context, 0.03),
-                  color: CompnentSize.textColor,
-                  fontWeight: FontWeight.w700,
-                  decoration: currentTasks[index]['completed']
-                      ? TextDecoration.lineThrough
-                      : TextDecoration
-                          .none, // Add line-through decoration when task is completed
+                title: Text(
+                  currentTasks[index].task,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    decoration: currentTasks[index].iscompleted ?? false
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                  ),
                 ),
-              ),
-              subtitle: Text(
-                '${currentTasks[index]['assignedTo']}   • Due ${currentTasks[index]['dueDate']} ${currentTasks[index]['dueTime']}',
-                style: TextStyle(
-                  fontFamily: 'MooliBold',
-                  fontSize: CompnentSize.getFontSize(context, 0.026),
-                  color: CompnentSize.textColor,
-                  fontWeight: FontWeight.w600,
+                subtitle: Text(
+                  'Assigned By: ${currentTasks[index].assignBy}   • Due ${currentTasks[index].dueDate} ${currentTasks[index].dueTime}',
                 ),
-              ),
-              trailing: currentTasks == givenTasks
-                  ? Checkbox(
-                      value: currentTasks[index]['completed'],
-                      onChanged: (value) {
-                        setState(() {
-                          currentTasks[index]['completed'] = value;
-                        });
-                      },
-                      activeColor: Colors.blue,
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          currentTasks.removeAt(index);
-                        });
-                      },
-                    ),
-            ),
+                trailing: currentTasks == givenTasks
+                    ? IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            currentTasks.removeAt(index);
+                          });
+                        },
+                      )
+                    : Checkbox(
+                        value: currentTasks[index].iscompleted ?? false,
+                        onChanged: (value) async {
+                          setState(() {
+                            currentTasks[index].iscompleted = value!;
+                          });
+                          // Update iscompleted value in Firestore
+                          try {
+                            await FirebaseFirestore.instance
+                                .collection('Family')
+                                .doc(Todo.familyId)
+                                .collection('todoTasks')
+                                .doc(currentTasks[index].taskId)
+                                .update({'iscompleted': value});
+                          } catch (e) {
+                            print('Error updating iscompleted value: $e');
+                            // Handle error accordingly
+                          }
+                        },
+                      )),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue.shade300,
         onPressed: () {
-          Get.to(
-              () => AddTask(familyId: Todo.familyId, memberId: Todo.memberId));
+          Get.to(() => AddTask(
+                familyId: Todo.familyId,
+                memberId: Todo.memberId,
+              ));
         },
         child: Icon(Icons.add),
       ),

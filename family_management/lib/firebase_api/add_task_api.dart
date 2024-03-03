@@ -53,11 +53,14 @@ class AddTaskApi {
           _firestore.collection('Family/$familyId/todoTasks');
       DocumentReference docRef = await tasksCollection.add({
         'task': task,
-        if (assignedTo != null) 'assignedTo': assignedTo 
-        else 'assignedTo':"everyone",
+        if (assignedTo != null)
+          'assignedTo': assignedTo
+        else
+          'assignedTo': "everyone",
         'dueDate': dueDate,
         'dueTime': dueTime,
         'memberId': memberId,
+        'iscompleted': false,
         'createdAt': Timestamp.now(),
       });
 
