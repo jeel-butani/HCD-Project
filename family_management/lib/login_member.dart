@@ -5,6 +5,7 @@ import 'package:family_management/signup_member.dart';
 import 'package:family_management/ui_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginMember extends StatefulWidget {
   static String familyId = "";
@@ -110,7 +111,12 @@ class _LoginMemberState extends State<LoginMember> {
     ));
     String familyIdString = memberId?.toString() ?? '';
     if (memberId != "") {
-      Get.off(() => Home(familyId: LoginMember.familyId, memberId: familyIdString));
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLogin', true);
+      await prefs.setString('familyId', LoginMember.familyId);
+      await prefs.setString('memberId', familyIdString);
+      Get.off(
+          () => Home(familyId: LoginMember.familyId, memberId: familyIdString));
     } else {
       showDialog(
           context: context,
