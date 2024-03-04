@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:family_management/firebase_api/fetch_task_api.dart';
-import 'package:family_management/get_size.dart';
 import 'package:family_management/model/task.dart';
 import 'package:family_management/todo/add_task.dart';
 import 'package:flutter/material.dart';
@@ -21,28 +20,7 @@ class Todo extends StatefulWidget {
 class _TodoState extends State<Todo> {
   List<TaskData> assignedTasks = [];
 
-  List<TaskData> givenTasks = [
-    TaskData(
-      task: 'Review code changes',
-      assignedTo: 'Bob',
-      dueDate: '2024-03-12',
-      dueTime: '14:00',
-      assignBy: 'Someone Else',
-      createdAt: DateTime.now(),
-      iscompleted: false,
-      taskId: '',
-    ),
-    TaskData(
-      task: 'Arrange team meeting',
-      assignedTo: 'Emily',
-      dueDate: '2024-03-15',
-      dueTime: '09:00',
-      assignBy: 'Someone Else',
-      createdAt: DateTime.now(),
-      iscompleted: false,
-      taskId: '',
-    ),
-  ];
+  List<TaskData> givenTasks = [];
 
   List<TaskData> currentTasks = [];
   String dropdownValue = 'Assigned Tasks';
@@ -51,22 +29,35 @@ class _TodoState extends State<Todo> {
   void initState() {
     super.initState();
     fetchAssignedTasks();
+    fetchGivenTasks();
   }
 
   Future<void> fetchAssignedTasks() async {
     try {
-      List<TaskData> tasks = await FetchTask.fetchTasks(
+      List<TaskData> tasks = await FetchTask.fetchAssignedTasks(
         familyId: Todo.familyId,
         memberId: Todo.memberId,
       );
-      print('Tasks: ' + tasks.toString());
       setState(() {
         assignedTasks = tasks;
         currentTasks = assignedTasks;
       });
     } catch (e) {
       print('Error fetching assigned tasks: $e');
-      // Handle error accordingly
+    }
+  }
+
+  Future<void> fetchGivenTasks() async {
+    try {
+      List<TaskData> tasks = await FetchTask.fetchGivenTasks(
+        familyId: Todo.familyId,
+        memberId: Todo.memberId,
+      );
+      setState(() {
+        givenTasks = tasks;
+      });
+    } catch (e) {
+      print('Error fetching assigned tasks: $e');
     }
   }
 
@@ -92,15 +83,31 @@ class _TodoState extends State<Todo> {
                   ),
                 ),
                 subtitle: Text(
-                  'Assigned By: ${currentTasks[index].assignBy}   • Due ${currentTasks[index].dueDate} ${currentTasks[index].dueTime}',
+                  'Assigned To: ${currentTasks[index].assignedTo}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}',
                 ),
                 trailing: currentTasks == givenTasks
                     ? IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          setState(() {
-                            currentTasks.removeAt(index);
-                          });
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () async {
+                          try {
+                            // Delete the task from Firestore
+                            await FirebaseFirestore.instance
+                                .collection('Family')
+                                .doc(Todo.familyId)
+                                .collection('todoTasks')
+                                .doc(currentTasks[index].taskId)
+                                .delete();
+
+                            // Remove the task from the currentTasks list and update UI
+                            setState(() {
+                              currentTasks.removeAt(index);
+                            });
+                          } catch (e) {
+                            print('Error deleting task: $e');
+                          }
                         },
                       )
                     : Checkbox(
@@ -109,7 +116,6 @@ class _TodoState extends State<Todo> {
                           setState(() {
                             currentTasks[index].iscompleted = value!;
                           });
-                          // Update iscompleted value in Firestore
                           try {
                             await FirebaseFirestore.instance
                                 .collection('Family')
@@ -119,7 +125,6 @@ class _TodoState extends State<Todo> {
                                 .update({'iscompleted': value});
                           } catch (e) {
                             print('Error updating iscompleted value: $e');
-                            // Handle error accordingly
                           }
                         },
                       )),

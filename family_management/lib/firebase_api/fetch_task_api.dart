@@ -6,7 +6,7 @@ import '../model/response.dart';
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class FetchTask {
-  static Future<List<TaskData>> fetchTasks({
+  static Future<List<TaskData>> fetchAssignedTasks({
     required String familyId,
     required String memberId,
   }) async {
@@ -32,6 +32,7 @@ class FetchTask {
           .doc(familyId)
           .collection('todoTasks')
           .where('assignedTo', isEqualTo: 'everyone')
+          .where('memberId', isNotEqualTo: memberId)
           .get();
 
       List<TaskData> tasks = [];
@@ -54,7 +55,7 @@ class FetchTask {
       tasks.addAll(querySnapshotEveryone.docs.map((document) {
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
         return TaskData(
-          taskId: document.id, // Assuming taskId is the document ID
+          taskId: document.id,
           task: data['task'] ?? '',
           assignedTo: data['assignedTo'] ?? '',
           dueDate: data['dueDate'] ?? '',
@@ -65,6 +66,40 @@ class FetchTask {
               (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
         );
       }));
+
+      return tasks;
+    } catch (e) {
+      print('Error fetching tasks: $e');
+      return [];
+    }
+  }
+
+  static Future<List<TaskData>> fetchGivenTasks({
+    required String familyId,
+    required String memberId,
+  }) async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('Family')
+          .doc(familyId)
+          .collection('todoTasks')
+          .where('memberId', isEqualTo: memberId)
+          .get();
+
+      List<TaskData> tasks = querySnapshot.docs.map((document) {
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+        return TaskData(
+          taskId: document.id,
+          task: data['task'] ?? '',
+          assignedTo: data['assignedTo'] ?? '',
+          dueDate: data['dueDate'] ?? '',
+          dueTime: data['dueTime'] ?? '',
+          iscompleted: data['iscompleted'] ?? false,
+          assignBy: data['assignBy'] ?? '',
+          createdAt:
+              (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
+        );
+      }).toList();
 
       return tasks;
     } catch (e) {
