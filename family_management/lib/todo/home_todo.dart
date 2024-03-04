@@ -83,7 +83,9 @@ class _TodoState extends State<Todo> {
                   ),
                 ),
                 subtitle: Text(
-                  'Assigned To: ${currentTasks[index].assignedTo}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}',
+                  dropdownValue == 'Assigned Tasks'
+                      ? 'Assigned By: ${currentTasks[index].assignBy}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}'
+                      : 'Assigned To: ${currentTasks[index].assignedTo}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}',
                 ),
                 trailing: currentTasks == givenTasks
                     ? IconButton(
@@ -93,7 +95,6 @@ class _TodoState extends State<Todo> {
                         ),
                         onPressed: () async {
                           try {
-                            // Delete the task from Firestore
                             await FirebaseFirestore.instance
                                 .collection('Family')
                                 .doc(Todo.familyId)

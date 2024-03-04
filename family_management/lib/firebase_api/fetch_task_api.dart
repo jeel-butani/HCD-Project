@@ -37,23 +37,10 @@ class FetchTask {
 
       List<TaskData> tasks = [];
 
-      tasks.addAll(querySnapshot.docs.map((document) {
+      tasks.addAll(await Future.wait(querySnapshot.docs.map((document) async {
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-        return TaskData(
-          taskId: document.id, // Assuming taskId is the document ID
-          task: data['task'] ?? '',
-          assignedTo: data['assignedTo'] ?? '',
-          dueDate: data['dueDate'] ?? '',
-          dueTime: data['dueTime'] ?? '',
-          iscompleted: data['iscompleted'] ?? false,
-          assignBy: data['assignBy'] ?? '',
-          createdAt:
-              (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
-        );
-      }));
-
-      tasks.addAll(querySnapshotEveryone.docs.map((document) {
-        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+        String assignById = data['memberId'] ?? '';
+        String assignByName = await getMemberName(familyId, assignById);
         return TaskData(
           taskId: document.id,
           task: data['task'] ?? '',
@@ -61,11 +48,29 @@ class FetchTask {
           dueDate: data['dueDate'] ?? '',
           dueTime: data['dueTime'] ?? '',
           iscompleted: data['iscompleted'] ?? false,
-          assignBy: data['assignBy'] ?? '',
+          assignBy: assignByName, // Use the member name here
           createdAt:
               (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
         );
-      }));
+      }).toList()));
+
+      tasks.addAll(
+          await Future.wait(querySnapshotEveryone.docs.map((document) async {
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+        String assignById = data['memberId'] ?? '';
+        String assignByName = await getMemberName(familyId, assignById);
+        return TaskData(
+          taskId: document.id,
+          task: data['task'] ?? '',
+          assignedTo: data['assignedTo'] ?? '',
+          dueDate: data['dueDate'] ?? '',
+          dueTime: data['dueTime'] ?? '',
+          iscompleted: data['iscompleted'] ?? false,
+          assignBy: assignByName, // Use the member name here
+          createdAt:
+              (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
+        );
+      }).toList()));
 
       return tasks;
     } catch (e) {
@@ -105,6 +110,21 @@ class FetchTask {
     } catch (e) {
       print('Error fetching tasks: $e');
       return [];
+    }
+  }
+
+  static Future<String> getMemberName(String familyId, String memberId) async {
+    try {
+      DocumentSnapshot memberSnapshot = await _firestore
+          .collection('Family')
+          .doc(familyId)
+          .collection('members')
+          .doc(memberId)
+          .get();
+      return memberSnapshot.get('member_name') ?? '';
+    } catch (e) {
+      print('Error fetching member name: $e');
+      return '';
     }
   }
 }
