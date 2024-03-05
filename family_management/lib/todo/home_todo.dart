@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:family_management/firebase_api/fetch_task_api.dart';
+import 'package:family_management/get_size.dart';
 import 'package:family_management/model/task.dart';
 import 'package:family_management/todo/add_task.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,15 @@ class _TodoState extends State<Todo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ToDo List'),
+        backgroundColor: CompnentSize.background,
+        title: Text(
+          'ToDoList',
+          style: TextStyle(
+            fontFamily: 'MooliBold',
+            color: CompnentSize.boldTextColor,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
         centerTitle: true,
       ),
       body: ListView.builder(

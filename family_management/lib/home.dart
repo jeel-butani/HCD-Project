@@ -18,121 +18,120 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: CompnentSize.background,
-          title: Text(
-            'Dashbord',
-            style: TextStyle(
-                fontFamily: 'MooliBold',
-                color: CompnentSize.boldTextColor,
-                fontWeight: FontWeight.w900),
+      appBar: AppBar(
+        backgroundColor: CompnentSize.background,
+        title: Text(
+          'Dashboard',
+          style: TextStyle(
+            fontFamily: 'MooliBold',
+            color: CompnentSize.boldTextColor,
+            fontWeight: FontWeight.w900,
           ),
         ),
-        drawer: buildDrawer(context),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        // print(Home.familyId);
-                        // print(Home.memberId);
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      drawer: buildDrawer(context),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildDashboardItem(
+                  context,
+                  imageAsset: 'assets/images/budget.png',
+                  title: 'Budget',
+                  onTap: () {
+                    Get.to(() => HomeBudget(
+                          familyId: Home.familyId,
+                          memberId: Home.memberId,
+                        ));
+                  },
+                ),
+                SizedBox(width: 10),
+                buildDashboardItem(
+                  context,
+                  imageAsset: 'assets/images/todo.png',
+                  title: 'ToDo',
+                  onTap: () {
+                    Get.to(() => Todo(
+                          familyId: Home.familyId,
+                          memberId: Home.memberId,
+                        ));
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildDashboardItem(
+                  context,
+                  imageAsset: 'assets/images/your_image1.png',
+                  title: 'Your Title 1',
+                  onTap: () {
+                    // Add navigation action here
+                  },
+                ),
+                SizedBox(width: 10),
+                buildDashboardItem(
+                  context,
+                  imageAsset: 'assets/images/your_image2.png',
+                  title: 'Your Title 2',
+                  onTap: () {
+                    // Add navigation action here
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-                        Get.to(() => HomeBudget(
-                              familyId: Home.familyId,
-                              memberId: Home.memberId,
-                            ));
-                      },
-                      child: Container(
-                        width: CompnentSize.getWidth(context, 0.43),
-                        height: CompnentSize.getHeight(context, 0.25),
-                        decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 100, // Set width of the image
-                              height: 100, // Set height of the image
-                              child: Image.asset(
-                                'assets/images/budget.png',
-                                fit: BoxFit
-                                    .contain, // Adjust the fit of the image
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              "Budget",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'MooliBold',
-                                color: CompnentSize.background,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        // print(Home.familyId);
-                        // print(Home.memberId);
-
-                        Get.to(() => Todo(
-                              familyId: Home.familyId,
-                              memberId: Home.memberId,
-                            ));
-                      },
-                      child: Container(
-                        width: CompnentSize.getWidth(context, 0.43),
-                        height: CompnentSize.getHeight(context, 0.25),
-                        decoration: BoxDecoration(
-                          color: Colors.black12,
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 100, // Set width of the image
-                              height: 100, // Set height of the image
-                              child: Image.asset(
-                                'assets/images/todo.png',
-                                fit: BoxFit
-                                    .contain, // Adjust the fit of the image
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              "ToDo",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'MooliBold',
-                                color: CompnentSize.background,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ));
+  Widget buildDashboardItem(
+    BuildContext context, {
+    required String imageAsset,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: CompnentSize.getWidth(context, 0.43),
+        height: CompnentSize.getHeight(context, 0.25),
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 100,
+              height: 100,
+              child: Image.asset(
+                imageAsset,
+                fit: BoxFit.contain,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontFamily: 'MooliBold',
+                color: CompnentSize.background,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildDrawer(BuildContext context) {
@@ -164,11 +163,11 @@ class Home extends StatelessWidget {
             title: Text(
               'Home',
               style: TextStyle(
-                fontFamily: 'Mooli', // Set font style
+                fontFamily: 'Mooli',
               ),
             ),
             onTap: () {
-              Navigator.pop(context); // Close the drawer
+              Get.back();
             },
           ),
           ListTile(
@@ -176,12 +175,11 @@ class Home extends StatelessWidget {
             title: Text(
               'Settings',
               style: TextStyle(
-                fontFamily: 'Mooli', // Set font style
+                fontFamily: 'Mooli',
               ),
             ),
             onTap: () {
-              // Add your settings logic here
-              Navigator.pop(context); // Close the drawer
+              Get.back();
             },
           ),
           ListTile(
@@ -189,7 +187,7 @@ class Home extends StatelessWidget {
             title: Text(
               'Logout',
               style: TextStyle(
-                fontFamily: 'Mooli', // Set font style
+                fontFamily: 'Mooli',
               ),
             ),
             onTap: () async {
@@ -201,7 +199,6 @@ class Home extends StatelessWidget {
               Get.offAll(() => LoginFamily());
             },
           ),
-          // Add more ListTile widgets for additional drawer items
         ],
       ),
     );

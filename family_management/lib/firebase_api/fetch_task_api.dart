@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:family_management/model/task.dart';
-import 'package:family_management/model/transaction.dart';
-import '../model/response.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
