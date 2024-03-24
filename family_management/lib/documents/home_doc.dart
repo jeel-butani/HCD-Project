@@ -1,5 +1,7 @@
 import 'package:family_management/documents/add_cat.dart';
+import 'package:family_management/firebase_api/fetch_cat_doc.dart';
 import 'package:family_management/get_size.dart';
+import 'package:family_management/model/docCat.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +19,25 @@ class HomeDoc extends StatefulWidget {
 
 class _HomeDocState extends State<HomeDoc> {
   String? _selectedCategory;
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
+
+  void _fetchCategories() async {
+    List<DocCategoryData> categories =
+        await FetchCategory.fetchCategories(HomeDoc.familyId);
+
+    List<String> categoryNames =
+        categories.map((category) => category.categoryName).toList();
+
+    setState(() {
+      _categories = categoryNames;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +54,12 @@ class _HomeDocState extends State<HomeDoc> {
         ),
         centerTitle: true,
       ),
-      body: ListView(
-        children: [
-          _buildCategoryRow('Result', Icons.assignment),
-          _buildCategoryRow('Light Bills', Icons.lightbulb),
-          _buildCategoryRow('10th Document', Icons.school),
-          _buildCategoryRow('12th Document', Icons.school),
-          _buildCategoryRow('Gas Bills', Icons.local_gas_station),
-        ],
+      body: ListView.builder(
+        itemCount: _categories.length,
+        itemBuilder: (context, index) {
+          return _buildCategoryRow(_categories[index],
+              Icons.category); // Using category icon for each category
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue.shade300,
@@ -60,10 +79,6 @@ class _HomeDocState extends State<HomeDoc> {
         });
       },
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: CompnentSize.background,
-        ),
         title: Text(
           categoryName,
           style: TextStyle(
@@ -107,7 +122,8 @@ class _HomeDocState extends State<HomeDoc> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Get.to(AddCategory(familyId: HomeDoc.familyId, memberId: HomeDoc.memberId));
+                  Get.to(AddCategory(
+                      familyId: HomeDoc.familyId, memberId: HomeDoc.memberId));
                 },
                 child: Text(
                   "+ Categories",
