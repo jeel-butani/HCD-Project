@@ -64,7 +64,7 @@ class FetchTask {
           dueDate: data['dueDate'] ?? '',
           dueTime: data['dueTime'] ?? '',
           iscompleted: data['iscompleted'] ?? false,
-          assignBy: assignByName, // Use the member name here
+          assignBy: assignByName, 
           createdAt:
               (data['createdAt'] as Timestamp).toDate() ?? DateTime.now(),
         );

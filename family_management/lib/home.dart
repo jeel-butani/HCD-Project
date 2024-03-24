@@ -1,4 +1,5 @@
 import 'package:family_management/budget/home_budget.dart';
+import 'package:family_management/documents/home_doc.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/login_family.dart';
 import 'package:family_management/todo/home_todo.dart';
@@ -69,20 +70,21 @@ class Home extends StatelessWidget {
               children: [
                 buildDashboardItem(
                   context,
-                  imageAsset: 'assets/images/your_image1.png',
-                  title: 'Your Title 1',
+                  imageAsset: 'assets/images/doc.png',
+                  title: 'Documents',
                   onTap: () {
-                    // Add navigation action here
+                    Get.to(HomeDoc(
+                      familyId: Home.familyId,
+                      memberId: Home.memberId,
+                    ));
                   },
                 ),
                 SizedBox(width: 10),
                 buildDashboardItem(
                   context,
                   imageAsset: 'assets/images/your_image2.png',
-                  title: 'Your Title 2',
-                  onTap: () {
-                    // Add navigation action here
-                  },
+                  title: 'Title',
+                  onTap: () {},
                 ),
               ],
             ),
