@@ -1,3 +1,5 @@
+import 'package:family_management/firebase_api/add_cat_doc.dart';
+import 'package:family_management/get_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,7 +22,16 @@ class _AddCategoryState extends State<AddCategory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Category'),
+        backgroundColor: CompnentSize.background,
+        title: Text(
+          'Add Category',
+          style: TextStyle(
+            fontFamily: 'Mooli',
+            color: CompnentSize.boldTextColor,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -42,8 +53,7 @@ class _AddCategoryState extends State<AddCategory> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-
-                _addCategory();
+                addCategory();
               },
               child: Text('Add Category'),
             ),
@@ -53,10 +63,25 @@ class _AddCategoryState extends State<AddCategory> {
     );
   }
 
-  void _addCategory() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Category added successfully')),
+  void addCategory() async {
+    var response = await AddCategoryApi.addCategory(
+      familyId: AddCategory.familyId,
+      categoryName: _categoryController.text.trim(),
     );
-    Get.back();
+
+    if (response.code != 200) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text(response.message.toString()),
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Category added successfully')),
+      );
+    }
   }
 }
