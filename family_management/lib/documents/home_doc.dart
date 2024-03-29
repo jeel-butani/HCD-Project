@@ -1,4 +1,5 @@
 import 'package:family_management/documents/add_cat.dart';
+import 'package:family_management/documents/add_file.dart';
 import 'package:family_management/firebase_api/fetch_cat_doc.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/model/docCat.dart';
@@ -106,7 +107,10 @@ class _HomeDocState extends State<HomeDoc> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Get.back();
+                  Get.to(() => AddFileScreen(
+                        familyId: HomeDoc.familyId,
+                        memberId: HomeDoc.memberId,
+                      ));
                 },
                 child: Text(
                   "+ File",
