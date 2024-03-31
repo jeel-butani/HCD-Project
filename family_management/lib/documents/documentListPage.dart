@@ -1,6 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:family_management/model/categoryFile.dart';
 import 'package:flutter/material.dart';
 import 'package:family_management/model/documentData.dart';
 import 'package:family_management/firebase_api/fetchDocument.dart';
+import 'package:open_file/open_file.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class DocumentListPage extends StatefulWidget {
   final String category;
@@ -20,7 +29,7 @@ class DocumentListPage extends StatefulWidget {
 }
 
 class _DocumentListPageState extends State<DocumentListPage> {
-  late List<DocumentData> documents;
+  late List<DocumentData> documents = [];
 
   @override
   void initState() {
@@ -39,6 +48,27 @@ class _DocumentListPageState extends State<DocumentListPage> {
     });
   }
 
+  Future<String> _downloadDocument(DocumentData document) async {
+    try {
+      Uint8List bytes = base64.decode(document.fileData);
+      Directory? externalDirectory = await getExternalStorageDirectory();
+      if (externalDirectory != null) {
+        String fileName =
+            document.documentName.replaceAll(RegExp(r'[^a-zA-Z0-9\.]'), '_');
+        String filePath =
+            path.join(externalDirectory.path, fileName); // Use path.join
+        File file = File(filePath);
+        await file.writeAsBytes(bytes);
+        return filePath;
+      } else {
+        throw Exception('External storage directory is null');
+      }
+    } catch (e) {
+      print('Error downloading document: $e');
+      throw Exception('Error downloading document');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +76,7 @@ class _DocumentListPageState extends State<DocumentListPage> {
         title: Text('Documents - ${widget.category}'),
       ),
       body: documents != null
-          ? GridView.builder(   
+          ? GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 8.0,
@@ -59,7 +89,9 @@ class _DocumentListPageState extends State<DocumentListPage> {
                   child: ListTile(
                     title: Text(documents[index].documentName),
                     subtitle: Text(documents[index].categoryName),
-                    onTap: () {},
+                    onTap: () {
+                      _downloadDocument(documents[index]);
+                    },
                   ),
                 );
               },

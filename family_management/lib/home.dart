@@ -82,8 +82,8 @@ class Home extends StatelessWidget {
                 SizedBox(width: 10),
                 buildDashboardItem(
                   context,
-                  imageAsset: 'assets/images/your_image2.png',
-                  title: 'Title',
+                  imageAsset: 'assets/images/bank.png',
+                  title: 'Bank account details',
                   onTap: () {},
                 ),
               ],
