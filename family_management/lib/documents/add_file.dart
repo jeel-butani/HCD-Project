@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:family_management/documents/add_cat.dart';
+import 'package:family_management/documents/home_doc.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:get/get.dart';
 
 class AddFileScreen extends StatefulWidget {
   static String familyId = "";
@@ -70,6 +74,10 @@ class _AddFileScreenState extends State<AddFileScreen> {
               ),
             ),
             SizedBox(height: 10),
+            _selectedFile != null
+                ? Text('Selected File: ${_selectedFile!.name}')
+                : SizedBox(),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: _pickFile,
               child: Text('Choose File'),
@@ -128,13 +136,18 @@ class _AddFileScreenState extends State<AddFileScreen> {
     if (_selectedCategory == null ||
         _documentNameController.text.isEmpty ||
         _selectedFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields')),
+      );
       return;
     }
 
     String fileName = _selectedFile!.name!;
-    String filePath = _selectedFile!.path!;
+    List<int> fileBytes = _selectedFile!.bytes!;
 
     try {
+      String fileData = base64Encode(fileBytes);
+
       await FirebaseFirestore.instance
           .collection('Family')
           .doc(AddFileScreen.familyId)
@@ -143,10 +156,11 @@ class _AddFileScreenState extends State<AddFileScreen> {
         'category': _selectedCategory!,
         'documentName': _documentNameController.text.trim(),
         'fileName': fileName,
-        'filePath': filePath,
+        'fileData': fileData,
         'createAt': Timestamp.now(),
       });
-
+      Get.off(() => HomeDoc(
+          familyId: AddFileScreen.familyId, memberId: AddFileScreen.memberId));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('File added successfully')),
       );

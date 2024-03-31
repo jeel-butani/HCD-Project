@@ -1,5 +1,6 @@
 import 'package:family_management/documents/add_cat.dart';
 import 'package:family_management/documents/add_file.dart';
+import 'package:family_management/documents/documentListPage.dart';
 import 'package:family_management/firebase_api/fetch_cat_doc.dart';
 import 'package:family_management/get_size.dart';
 import 'package:family_management/model/docCat.dart';
@@ -58,8 +59,7 @@ class _HomeDocState extends State<HomeDoc> {
       body: ListView.builder(
         itemCount: _categories.length,
         itemBuilder: (context, index) {
-          return _buildCategoryRow(_categories[index],
-              Icons.category); // Using category icon for each category
+          return _buildCategoryRow(_categories[index]);
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -72,12 +72,17 @@ class _HomeDocState extends State<HomeDoc> {
     );
   }
 
-  Widget _buildCategoryRow(String categoryName, IconData icon) {
+  Widget _buildCategoryRow(String categoryName) {
     return InkWell(
       onTap: () {
         setState(() {
           _selectedCategory = categoryName;
         });
+        Get.to(() => DocumentListPage(
+              category: categoryName,
+              familyId: HomeDoc.familyId,
+              memberId: HomeDoc.memberId,
+            ));
       },
       child: ListTile(
         title: Text(
