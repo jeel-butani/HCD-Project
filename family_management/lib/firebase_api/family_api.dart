@@ -24,7 +24,6 @@ class FamilyCrud {
       "status": true,
     };
 
-    // ignore: unused_local_variable
     var result = await documentReferencer.set(data).whenComplete(() {
       response.code = 200;
       response.message = "Sucessfully added to the database";

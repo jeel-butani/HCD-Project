@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DocumentData {
   final String documentId;
   final String documentName;
-  final String fileData;
+  final String fileUrl;
   final String categoryName;
 
   DocumentData({
     required this.documentId,
     required this.documentName,
-    required this.fileData,
+    required this.fileUrl,
     required this.categoryName,
   });
 
@@ -17,7 +17,7 @@ class DocumentData {
     return DocumentData(
       documentId: documentId,
       documentName: map['documentName'] ?? '',
-      fileData: map['fileData'] ?? '',
+      fileUrl: map['fileUrl'] ?? '',
       categoryName: map['categoryName'] ?? '',
     );
   }

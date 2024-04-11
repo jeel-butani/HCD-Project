@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:family_management/documents/add_cat.dart';
 import 'package:family_management/documents/home_doc.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddFileScreen extends StatefulWidget {
   static String familyId = "";
@@ -146,7 +149,8 @@ class _AddFileScreenState extends State<AddFileScreen> {
     List<int> fileBytes = _selectedFile!.bytes!;
 
     try {
-      String fileData = base64Encode(fileBytes);
+      String fileUrl = await uploadFileToFirebase(
+          fileBytes, fileName, AddFileScreen.familyId);
 
       await FirebaseFirestore.instance
           .collection('Family')
@@ -156,9 +160,10 @@ class _AddFileScreenState extends State<AddFileScreen> {
         'category': _selectedCategory!,
         'documentName': _documentNameController.text.trim(),
         'fileName': fileName,
-        'fileData': fileData,
-        'createAt': Timestamp.now(),
+        'fileUrl': fileUrl,
+        'createdAt': Timestamp.now(),
       });
+
       Get.off(() => HomeDoc(
           familyId: AddFileScreen.familyId, memberId: AddFileScreen.memberId));
       ScaffoldMessenger.of(context).showSnackBar(
@@ -169,6 +174,25 @@ class _AddFileScreenState extends State<AddFileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error uploading file')),
       );
+    }
+  }
+
+  Future<String> uploadFileToFirebase(
+      List<int> fileBytes, String fileName, String familyId) async {
+    try {
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child('familyDocuments/$familyId/$fileName');
+      UploadTask uploadTask =
+          firebaseStorageRef.putData(Uint8List.fromList(fileBytes));
+
+      TaskSnapshot taskSnapshot = await uploadTask;
+      String fileUrl = await taskSnapshot.ref.getDownloadURL();
+      print('File uploaded successfully. URL: $fileUrl');
+      return fileUrl;
+    } catch (e) {
+      print('Error uploading file to Firebase Storage: $e');
+      throw e;
     }
   }
 }

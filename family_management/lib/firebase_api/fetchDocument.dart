@@ -22,7 +22,7 @@ class FetchDocument {
           documentId: document.id,
           documentName: data['documentName'] ?? '',
           categoryName: data['categoryName'] ?? '',
-          fileData: data['fileData'] ?? '',
+          fileUrl: data['fileUrl'],
         );
       }).toList();
 

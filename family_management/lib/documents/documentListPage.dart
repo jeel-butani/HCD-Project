@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:family_management/model/categoryFile.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:family_management/model/documentData.dart';
 import 'package:family_management/firebase_api/fetchDocument.dart';
@@ -48,24 +49,23 @@ class _DocumentListPageState extends State<DocumentListPage> {
     });
   }
 
-  Future<String> _downloadDocument(DocumentData document) async {
+  Future<void> _downloadDocument(DocumentData document) async {
     try {
-      Uint8List bytes = base64.decode(document.fileData);
-      Directory? externalDirectory = await getExternalStorageDirectory();
-      if (externalDirectory != null) {
-        String fileName =
-            document.documentName.replaceAll(RegExp(r'[^a-zA-Z0-9\.]'), '_');
-        String filePath =
-            path.join(externalDirectory.path, fileName); // Use path.join
-        File file = File(filePath);
-        await file.writeAsBytes(bytes);
-        return filePath;
-      } else {
-        throw Exception('External storage directory is null');
-      }
+
+      String fileName = Uri.decodeComponent(
+          document.fileUrl.split('%2F').last.split('?').first);
+      String storagePath =
+          'familyDocuments/${DocumentListPage.familyId}/$fileName';
+
+      Reference firebaseStorageRef =
+          FirebaseStorage.instance.ref().child(storagePath);
+
+      String downloadUrl = await firebaseStorageRef.getDownloadURL();
+
+      print('Downloaded file with URL: $downloadUrl');
     } catch (e) {
       print('Error downloading document: $e');
-      throw Exception('Error downloading document');
+      // Handle error accordingly
     }
   }
 
