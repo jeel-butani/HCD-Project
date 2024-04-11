@@ -12,7 +12,7 @@ class Transactions {
     required double amount,
     required String date,
     required String time,
-    required bool isExpense, // New parameter
+    required bool isExpense,
   }) async {
     final CollectionReference _collection = _firestore.collection(
         'Family/' + familyId + "/members/" + memberId + "/transactions");

@@ -1,3 +1,5 @@
+import 'package:family_management/bank_account/add_bank_info.dart';
+import 'package:family_management/bank_account/home_bank.dart';
 import 'package:family_management/budget/home_budget.dart';
 import 'package:family_management/documents/home_doc.dart';
 import 'package:family_management/get_size.dart';
@@ -84,7 +86,12 @@ class Home extends StatelessWidget {
                   context,
                   imageAsset: 'assets/images/bank.png',
                   title: 'Bank account details',
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(HomeBankAccount(
+                      familyId: Home.familyId,
+                      memberId: Home.memberId,
+                    ));
+                  },
                 ),
               ],
             ),
