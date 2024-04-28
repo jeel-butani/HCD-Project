@@ -91,10 +91,21 @@ class _TodoState extends State<Todo> {
                         : TextDecoration.none,
                   ),
                 ),
-                subtitle: Text(
-                  dropdownValue == 'Assigned Tasks'
-                      ? 'Assigned By: ${currentTasks[index].assignBy}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}'
-                      : 'Assigned To: ${currentTasks[index].assignedTo}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}',
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      dropdownValue == 'Assigned Tasks'
+                          ? 'Assigned By: ${currentTasks[index].assignBy}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime}  '
+                          : 'Assigned To: ${currentTasks[index].assignedTo}   • Due ${currentTasks[index].dueDate}  • ${currentTasks[index].dueTime} ',
+                    ),
+                    Text(
+                      dropdownValue != 'Assigned Tasks'
+                          ? 'Status: ${currentTasks[index].iscompleted} '
+                          : '',
+                    ),
+                  ],
                 ),
                 trailing: currentTasks == givenTasks
                     ? IconButton(
