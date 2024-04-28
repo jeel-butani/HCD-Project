@@ -1,4 +1,4 @@
-# Family Expense Tracker and Organizer Mobile Application
+# Family Expense Tracker and Organizer
 
 ## Description
 The Family Expense Tracker and Organizer is a mobile application designed to simplify household management by providing a centralized platform for tracking expenses, managing important documents, and storing essential contacts. The application is tailored for the head of the family, offering advanced functionalities, while also catering to the needs of other family members.
